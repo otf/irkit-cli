@@ -16,6 +16,8 @@ module IrKitData =
     Frequency : int
     Data : int list
   }
+
+  [<CompiledName("CreateRawMessage")>]
   let createRawMessage (freq:int) (data:int list) = { Frequency = freq; Data = data }
 
   type RawMessage with
@@ -36,6 +38,7 @@ module IrKitData =
 
 [<AutoOpen>]
 module IrKitService =
+  [<CompiledName("CreateZeroconfResolver")>]
   let zeroconfResolver = { new IDeviceEndPointResolver with
     member this.Resolve () = async {
       let! hosts = Async.AwaitTask <| ZeroconfResolver.ResolveAsync("_irkit._tcp.local.")
@@ -43,9 +46,11 @@ module IrKitService =
     }
   }
 
+  [<CompiledName("Lookup")>]
   let lookup (resolver:IDeviceEndPointResolver) =
     resolver.Resolve()
 
+  [<CompiledName("Send")>]
   let send (http:#HttpMessageInvoker) (Wifi ip:DeviceEndPoint) (msg:RawMessage) = async {
     let req = new HttpRequestMessage(HttpMethod.Post, sprintf "http://%s/messages" ip)
     req.Content <- new StringContent((msg |> toJSON).ToString())
@@ -53,6 +58,7 @@ module IrKitService =
     return ()
   }
 
+  [<CompiledName("Receive")>]
   let receive (http:#HttpMessageInvoker) (Wifi ip:DeviceEndPoint) = async {
     let req = new HttpRequestMessage(HttpMethod.Get, sprintf "http://%s/messages" ip)
     let! resp = Async.AwaitTask <| http.SendAsync(req, CancellationToken.None)
