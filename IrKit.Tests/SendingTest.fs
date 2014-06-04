@@ -16,14 +16,16 @@ type SendingTest () =
     let expectedReq = fun (req:HttpRequestMessage) -> 
       req.Method = HttpMethod.Post
       && req.RequestUri = Uri(sprintf "http://%s/messages" ip)
+      
+    let sendAsync = fun h -> <@ (h:HttpMessageInvoker).SendAsync(is(expectedReq), any()) @>
 
-    let http : HttpMessageInvoker = Mock.With(fun h -> 
+    let http = Mock.With(fun h -> 
       <@
-        h.SendAsync(is(expectedReq), any()) --> null
+        %(sendAsync h) --> null
       @>)
 
     { Frequency = 40; Data = [] }
     |> send http (Wifi ip)
     |> Async.RunSynchronously
 
-    verify <@ http.SendAsync(is(expectedReq), any()) @> once
+    verify <@ %(sendAsync http) @> once
