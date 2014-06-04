@@ -37,10 +37,8 @@ module IrKitFuncs =
   let lookup (resolver:IDeviceEndPointResolver) =
     resolver.Resolve()
 
-  let send (http:#HttpMessageInvoker) (endPoint:DeviceEndPoint) (msg:Message) = async {
-    let (Wifi ip) = endPoint
-    let uri = sprintf "http://%s/messages" ip
-    let req = new HttpRequestMessage(HttpMethod.Post, uri)
+  let send (http:#HttpMessageInvoker) (Wifi ip:DeviceEndPoint) (msg:Message) = async {
+    let req = new HttpRequestMessage(HttpMethod.Post, sprintf "http://%s/messages" ip)
     req.Content <- new StringContent((msg |> toJSON).ToString())
     let! _ = Async.AwaitTask <| http.SendAsync(req, CancellationToken.None)
     return ()
