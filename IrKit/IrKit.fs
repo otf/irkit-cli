@@ -15,9 +15,8 @@ type IDeviceEndPointResolver =
 
 [<AutoOpen>]
 module IrKitFuncs =
-  let lookup (resolver:IDeviceEndPointResolver) = async {
-    return! resolver.Resolve()
-  }
+  let lookup (resolver:IDeviceEndPointResolver) =
+    resolver.Resolve()
 
   let send (http:#HttpMessageInvoker) (endPoint:DeviceEndPoint) msg = async {
     let (Wifi ip) = endPoint
