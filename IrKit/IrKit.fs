@@ -9,13 +9,13 @@ open Zeroconf
 
 type DeviceEndPoint = Wifi of string
 
-type Message = {
+type RawMessage = {
   Frequency : int
   Data : int list
 }
 
-type Message with
-  static member ToJSON (x: Message) =
+type RawMessage with
+  static member ToJSON (x: RawMessage) =
     jobj [ 
       "format" .= "raw"
       "freq" .= x.Frequency
@@ -37,7 +37,7 @@ module IrKitFuncs =
   let lookup (resolver:IDeviceEndPointResolver) =
     resolver.Resolve()
 
-  let send (http:#HttpMessageInvoker) (Wifi ip:DeviceEndPoint) (msg:Message) = async {
+  let send (http:#HttpMessageInvoker) (Wifi ip:DeviceEndPoint) (msg:RawMessage) = async {
     let req = new HttpRequestMessage(HttpMethod.Post, sprintf "http://%s/messages" ip)
     req.Content <- new StringContent((msg |> toJSON).ToString())
     let! _ = Async.AwaitTask <| http.SendAsync(req, CancellationToken.None)
