@@ -1,5 +1,6 @@
 ﻿namespace IrKit
 
+open System.Threading
 open System.Net.Http
 
 type DeviceEndPoint = Lookup
@@ -11,6 +12,8 @@ type Message = {
 
 [<AutoOpen>]
 module IrKitFuncs =
-  let send msg endPoint (http:#HttpMessageInvoker) = async {
+  let send (http:#HttpMessageInvoker) endPoint msg = async {
+    use req = new HttpRequestMessage(HttpMethod.Post, "http://hoge.com/")
+    let _ = http.SendAsync(req, CancellationToken.None)
     return ()
   }
