@@ -33,7 +33,7 @@ type SendingTest () =
   [<TestCase("192.168.1.200")>]
   [<TestCase("192.168.1.201")>]
   member test.``should request a msg when sending the msg to the device by wifi.`` ip =
-    let content =  @"{""format"": ""raw"", ""freq"": 40, ""data"": [0,1,2]" 
+    let content =  @"{""format"": ""raw"", ""freq"": 40, ""data"": [0,1,2]}" 
     let httpMock = createHttpMock ip content
 
     { Frequency = 40; Data = [0; 1; 2] }
@@ -44,7 +44,7 @@ type SendingTest () =
   
   [<TestCase("192.168.1.200")>]
   member test.``should request a msg when sending the msg to the device by looked.`` ip =
-    let content =  @"{""format"": ""raw"", ""freq"": 40, ""data"": [0,1,2]" 
+    let content =  @"{""format"": ""raw"", ""freq"": 40, ""data"": [0,1,2]}" 
     let httpMock = createHttpMock ip content
     let resolve = fun r -> <@ (r:IDeviceEndPointResolver).Resolve() @>
 
