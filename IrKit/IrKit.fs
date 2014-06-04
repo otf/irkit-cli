@@ -30,7 +30,8 @@ module IrKitFuncs =
   let send (http:#HttpMessageInvoker) (endPoint:DeviceEndPoint) msg = async {
     let (Wifi ip) = endPoint
     let uri = sprintf "http://%s/messages" ip
-    use req = new HttpRequestMessage(HttpMethod.Post, uri)
+    let req = new HttpRequestMessage(HttpMethod.Post, uri)
+    req.Content <- new StringContent(@"{""format"": ""raw"", ""freq"": 40, ""data"": [0,1,2]" )
     let! _ = Async.AwaitTask <| http.SendAsync(req, CancellationToken.None)
     return ()
   }
