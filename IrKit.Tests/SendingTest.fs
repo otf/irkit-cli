@@ -7,7 +7,7 @@ open System.Net.Http
 open IrKit
 
 [<TestFixture>]
-type IrKitTest () =
+type SendingTest () =
 
   [<Test>]
   member test.``should request a msg when sending the msg.`` () =
