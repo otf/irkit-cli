@@ -3,27 +3,36 @@
 open FSharpPlus
 open System.Threading
 open System.Net.Http
+open System.Json
 open Fleece
 open Fleece.Operators
 open Zeroconf
 
-type DeviceEndPoint = Wifi of string // TODO: add | Internet of ClientKey * DeviceId 
+[<AutoOpen>]
+module IrKitData = 
+  type DeviceEndPoint = Wifi of string // TODO: add | Internet of ClientKey * DeviceId 
 
-type RawMessage = {
-  Frequency : int
-  Data : int list
-}
+  type RawMessage = {
+    Frequency : int
+    Data : int list
+  }
+  let createRawMessage (freq:int) (data:int list) = { Frequency = freq; Data = data }
 
-type RawMessage with
-  static member ToJSON (x: RawMessage) =
-    jobj [ 
-      "format" .= "raw"
-      "freq" .= x.Frequency
-      "data" .= x.Data
-    ]
+  type RawMessage with
+    static member ToJSON (x: RawMessage) =
+      jobj [ 
+        "format" .= "raw"
+        "freq" .= x.Frequency
+        "data" .= x.Data
+      ]
 
-type IDeviceEndPointResolver =
-  abstract Resolve : unit -> Async<DeviceEndPoint list>
+    static member FromJSON (_: RawMessage) =
+      function
+      | JObject o -> createRawMessage <!> (o .@ "freq") <*> (o .@ "data") 
+      | x -> Failure (sprintf "Expected RawMessae, found %A" x)
+
+  type IDeviceEndPointResolver =
+    abstract Resolve : unit -> Async<DeviceEndPoint list>
 
 [<AutoOpen>]
 module IrKitFuncs =
@@ -42,4 +51,14 @@ module IrKitFuncs =
     req.Content <- new StringContent((msg |> toJSON).ToString())
     let! _ = Async.AwaitTask <| http.SendAsync(req, CancellationToken.None)
     return ()
+  }
+
+  let receive (http:#HttpMessageInvoker) (Wifi ip:DeviceEndPoint) = async {
+    let req = new HttpRequestMessage(HttpMethod.Get, sprintf "http://%s/messages" ip)
+    let! resp = Async.AwaitTask <| http.SendAsync(req, CancellationToken.None)
+    let! str = Async.AwaitTask <| resp.Content.ReadAsStringAsync()
+    let respMsg : RawMessage ParseResult = (JsonValue.Parse >> fromJSON) str
+    match respMsg with
+    | Success s -> return s
+    | Failure fmsg -> return failwith fmsg 
   }
