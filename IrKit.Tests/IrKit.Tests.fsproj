@@ -55,6 +55,7 @@
     <None Include="app.config" />
     <Compile Include="SendingTest.fs" />
     <Compile Include="LookupTest.fs" />
+    <Compile Include="ReceivingTest.fs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Fleece">
