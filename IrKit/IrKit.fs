@@ -10,8 +10,15 @@ type Message = {
   Data : int list
 }
 
+type IDeviceEndPointResolver =
+  abstract Resolve : unit -> Async<DeviceEndPoint list>
+
 [<AutoOpen>]
 module IrKitFuncs =
+  let lookup resolver = async {
+    return [] 
+  }
+
   let send (http:#HttpMessageInvoker) (endPoint:DeviceEndPoint) msg = async {
     let (Wifi ip) = endPoint
     let uri = sprintf "http://%s/messages" ip
