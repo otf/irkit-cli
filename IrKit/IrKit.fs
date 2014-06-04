@@ -1,7 +1,9 @@
 ﻿namespace IrKit
 
+open FSharpPlus
 open System.Threading
 open System.Net.Http
+open Zeroconf
 
 type DeviceEndPoint = Wifi of string
 
@@ -15,9 +17,13 @@ type IDeviceEndPointResolver =
 
 [<AutoOpen>]
 module IrKitFuncs =
-  let zeroConfResolver = { new IDeviceEndPointResolver with
-    member this.Resolve () = async.Return [Wifi "192.168.1.200"]
+  let zeroconfResolver = { new IDeviceEndPointResolver with
+    member this.Resolve () = async {
+      let! hosts = Async.AwaitTask <| ZeroconfResolver.ResolveAsync("_irkit._tcp.local.")
+      return hosts |> map (fun host -> Wifi host.IPAddress) |> Seq.toList
+    }
   }
+
   let lookup (resolver:IDeviceEndPointResolver) =
     resolver.Resolve()
 
