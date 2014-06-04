@@ -35,7 +35,7 @@ module IrKitData =
     abstract Resolve : unit -> Async<DeviceEndPoint list>
 
 [<AutoOpen>]
-module IrKitFuncs =
+module IrKitService =
   let zeroconfResolver = { new IDeviceEndPointResolver with
     member this.Resolve () = async {
       let! hosts = Async.AwaitTask <| ZeroconfResolver.ResolveAsync("_irkit._tcp.local.")
