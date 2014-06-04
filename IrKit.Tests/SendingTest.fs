@@ -47,10 +47,10 @@ type SendingTest () =
 
     let resolver = Mock.With(fun r ->
       <@
-        %(resolve r) --> result [Wifi ip]
+        %(resolve r) --> async.Return [Wifi ip]
       @>)
   
-    async {
+    monad {
       let! dev = List.head <!> lookup resolver
       return! send http dev { Frequency = 40; Data = [] }
     }
