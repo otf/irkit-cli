@@ -5,6 +5,7 @@ open NUnit.Framework
 open FsUnit
 open Foq
 open System.Net.Http
+open System.Threading.Tasks
 open FSharpPlus
 open IrKit
 
@@ -17,9 +18,10 @@ type SendingTest () =
     fun h -> <@ (h:HttpMessageInvoker).SendAsync(is(isPostReq), any()) @>
 
   let createHttpMock ip =
+    let response = Task.Factory.StartNew(fun () -> new HttpResponseMessage())
     Mock.With(fun h -> 
       <@
-        %(sendAsyncWhenEmptyPost ip h) --> null
+        %(sendAsyncWhenEmptyPost ip h) --> response
       @>)
 
   [<TestCase("192.168.1.200")>]
