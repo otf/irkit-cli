@@ -6,6 +6,7 @@ open FsUnit
 open Foq
 open System.Net.Http
 open System.Threading.Tasks
+open System.Json
 open FSharpPlus
 open IrKit
 
@@ -30,10 +31,10 @@ type SendingTest () =
         %(sendAsyncWhenPost ip content h) --> response
       @>)
   
-  [<TestCase("192.168.1.200")>]
-  [<TestCase("192.168.1.201")>]
-  member test.``should request a msg when sending the msg to the device by looked.`` ip =
-    let content =  @"{""format"": ""raw"", ""freq"": 40, ""data"": [0,1,2]}" 
+  [<TestCase("192.168.1.200", 40, "[]")>]
+  [<TestCase("192.168.1.201", 36, "[0,1,2]")>]
+  member test.``should request a msg when sending the msg to the device by looked.`` ip freq data =
+    let content =  sprintf @"{""format"":""raw"",""freq"":%d,""data"":%s}" freq data
     let httpMock = createHttpMock ip content
     let resolve = fun r -> <@ (r:IDeviceEndPointResolver).Resolve() @>
 
@@ -44,7 +45,8 @@ type SendingTest () =
   
     monad {
       let! dev = List.head <!> lookup resolver
-      return! send httpMock dev { Frequency = 40; Data = [0; 1; 2] }
+      let data = ((JsonValue.Parse data :?> JsonArray) |> map (fun v -> v.Value.ReadAs<int>()) )
+      return! send httpMock dev { Frequency = freq; Data = List.ofSeq data }
     }
     |> Async.RunSynchronously
 
