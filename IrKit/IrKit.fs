@@ -7,7 +7,7 @@ open Fleece
 open Fleece.Operators
 open Zeroconf
 
-type DeviceEndPoint = Wifi of string
+type DeviceEndPoint = Wifi of string // TODO: add | Internet of ClientKey * DeviceId 
 
 type RawMessage = {
   Frequency : int
