@@ -34,23 +34,23 @@ module IrKitData =
       | x -> Failure (sprintf "Expected RawMessae, found %A" x)
 
   type IDeviceEndPointResolver =
-    abstract Resolve : unit -> Async<DeviceEndPoint list>
+    abstract ResolveAsync : unit -> Async<DeviceEndPoint list>
 
 [<AutoOpen>]
 module IrKitService =
   [<CompiledName("CreateZeroconfResolver")>]
   let zeroconfResolver = { new IDeviceEndPointResolver with
-    member this.Resolve () = async {
+    member this.ResolveAsync () = async {
       let! hosts = Async.AwaitTask <| ZeroconfResolver.ResolveAsync("_irkit._tcp.local.")
       return hosts |> map (fun host -> Wifi host.IPAddress) |> Seq.toList
     }
   }
 
-  [<CompiledName("Lookup")>]
+  [<CompiledName("LookupAsync")>]
   let lookup (resolver:IDeviceEndPointResolver) =
-    resolver.Resolve()
+    resolver.ResolveAsync()
 
-  [<CompiledName("Send")>]
+  [<CompiledName("SendAsync")>]
   let send (http:#HttpMessageInvoker) (Wifi ip:DeviceEndPoint) (msg:RawMessage) = async {
     let req = new HttpRequestMessage(HttpMethod.Post, sprintf "http://%s/messages" ip)
     req.Content <- new StringContent((msg |> toJSON).ToString())
@@ -58,7 +58,7 @@ module IrKitService =
     return ()
   }
 
-  [<CompiledName("Receive")>]
+  [<CompiledName("ReceiveAsync")>]
   let receive (http:#HttpMessageInvoker) (Wifi ip:DeviceEndPoint) = async {
     let req = new HttpRequestMessage(HttpMethod.Get, sprintf "http://%s/messages" ip)
     let! resp = Async.AwaitTask <| http.SendAsync(req, CancellationToken.None)

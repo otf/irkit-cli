@@ -36,7 +36,7 @@ type SendingTest () =
   member test.``should request a msg when sending the msg to the device by looked.`` ip freq data =
     let content =  sprintf @"{""format"":""raw"",""freq"":%d,""data"":%s}" freq data
     let httpMock = createHttpMock ip content
-    let resolve = fun r -> <@ (r:IDeviceEndPointResolver).Resolve() @>
+    let resolve = fun r -> <@ (r:IDeviceEndPointResolver).ResolveAsync() @>
 
     let resolver = Mock.With(fun r ->
       <@
