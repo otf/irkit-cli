@@ -10,8 +10,8 @@ open IrKit
 [<TestFixture>]
 [<Explicit>]
 type LookupTest () =
-  [<TestCase("192.168.1.200")>]
+  [<TestCase("192.168.11.28")>]
   member test.``should found the endpoint when lookup-ing`` ip =
-    lookup zeroConfResolver
+    lookup zeroconfResolver
     |> Async.RunSynchronously
-    |> should equal [Wifi ip]
+    |> should contain (Wifi ip)
