@@ -12,8 +12,10 @@ type Message = {
 
 [<AutoOpen>]
 module IrKitFuncs =
-  let send (http:#HttpMessageInvoker) endPoint msg = async {
-    use req = new HttpRequestMessage(HttpMethod.Post, "http://192.168.1.200/messages")
+  let send (http:#HttpMessageInvoker) (endPoint:DeviceEndPoint) msg = async {
+    let (Wifi ip) = endPoint
+    let uri = sprintf "http://%s/messages" ip
+    use req = new HttpRequestMessage(HttpMethod.Post, uri)
     let _ = http.SendAsync(req, CancellationToken.None)
     return ()
   }
