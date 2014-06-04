@@ -13,7 +13,7 @@ type Message = {
 [<AutoOpen>]
 module IrKitFuncs =
   let send (http:#HttpMessageInvoker) endPoint msg = async {
-    use req = new HttpRequestMessage(HttpMethod.Post, "http://hoge.com/")
+    use req = new HttpRequestMessage(HttpMethod.Post, "http://192.168.1.20/messages")
     let _ = http.SendAsync(req, CancellationToken.None)
     return ()
   }
