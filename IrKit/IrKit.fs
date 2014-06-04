@@ -15,6 +15,9 @@ type IDeviceEndPointResolver =
 
 [<AutoOpen>]
 module IrKitFuncs =
+  let zeroConfResolver = { new IDeviceEndPointResolver with
+    member this.Resolve () = async.Return [Wifi "192.168.1.200"]
+  }
   let lookup (resolver:IDeviceEndPointResolver) =
     resolver.Resolve()
 
