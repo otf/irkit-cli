@@ -10,40 +10,33 @@ open IrKit
 
 [<TestFixture>]
 type SendingTest () =
+  let sendAsyncWhenEmptyPost ip = 
+    let isPostReq = fun (req:HttpRequestMessage) -> 
+      req.Method = HttpMethod.Post
+      && req.RequestUri = Uri(sprintf "http://%s/messages" ip)
+    fun h -> <@ (h:HttpMessageInvoker).SendAsync(is(isPostReq), any()) @>
+
+  let createHttpMock ip =
+    Mock.With(fun h -> 
+      <@
+        %(sendAsyncWhenEmptyPost ip h) --> null
+      @>)
 
   [<TestCase("192.168.1.200")>]
   [<TestCase("192.168.1.201")>]
   member test.``should request a msg when sending the msg to the device by wifi.`` ip =
-    let expectedReq = fun (req:HttpRequestMessage) -> 
-      req.Method = HttpMethod.Post
-      && req.RequestUri = Uri(sprintf "http://%s/messages" ip)
-      
-    let sendAsync = fun h -> <@ (h:HttpMessageInvoker).SendAsync(is(expectedReq), any()) @>
-
-    let http = Mock.With(fun h -> 
-      <@
-        %(sendAsync h) --> null
-      @>)
+    let httpMock = createHttpMock ip
 
     { Frequency = 40; Data = [] }
-    |> send http (Wifi ip)
+    |> send httpMock (Wifi ip)
     |> Async.RunSynchronously
 
-    verify <@ %(sendAsync http) @> once
+    verify <@ %(httpMock |> sendAsyncWhenEmptyPost ip) @> once
   
   [<TestCase("192.168.1.200")>]
   member test.``should request a msg when sending the msg to the device by looked.`` ip =
-    let expectedReq = fun (req:HttpRequestMessage) -> 
-      req.Method = HttpMethod.Post
-      && req.RequestUri = Uri(sprintf "http://%s/messages" ip)
-      
-    let sendAsync = fun h -> <@ (h:HttpMessageInvoker).SendAsync(is(expectedReq), any()) @>
+    let httpMock = createHttpMock ip
     let resolve = fun r -> <@ (r:IDeviceEndPointResolver).Resolve() @>
-
-    let http = Mock.With(fun h -> 
-      <@
-        %(sendAsync h) --> null
-      @>)
 
     let resolver = Mock.With(fun r ->
       <@
@@ -52,8 +45,8 @@ type SendingTest () =
   
     monad {
       let! dev = List.head <!> lookup resolver
-      return! send http dev { Frequency = 40; Data = [] }
+      return! send httpMock dev { Frequency = 40; Data = [] }
     }
     |> Async.RunSynchronously
 
-    verify <@ %(sendAsync http) @> once
+    verify <@ %(httpMock |> sendAsyncWhenEmptyPost ip) @> once
