@@ -3,7 +3,7 @@
 open System.Threading
 open System.Net.Http
 
-type DeviceEndPoint = Lookup
+type DeviceEndPoint = Wifi of string
 
 type Message = {
   Frequency : int
