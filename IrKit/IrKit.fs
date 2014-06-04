@@ -3,6 +3,8 @@
 open FSharpPlus
 open System.Threading
 open System.Net.Http
+open Fleece
+open Fleece.Operators
 open Zeroconf
 
 type DeviceEndPoint = Wifi of string
@@ -11,6 +13,14 @@ type Message = {
   Frequency : int
   Data : int list
 }
+
+type Message with
+  static member ToJSON (x: Message) =
+    jobj [ 
+      "format" .= "raw"
+      "freq" .= x.Frequency
+      "data" .= x.Data
+    ]
 
 type IDeviceEndPointResolver =
   abstract Resolve : unit -> Async<DeviceEndPoint list>
@@ -27,11 +37,11 @@ module IrKitFuncs =
   let lookup (resolver:IDeviceEndPointResolver) =
     resolver.Resolve()
 
-  let send (http:#HttpMessageInvoker) (endPoint:DeviceEndPoint) msg = async {
+  let send (http:#HttpMessageInvoker) (endPoint:DeviceEndPoint) (msg:Message) = async {
     let (Wifi ip) = endPoint
     let uri = sprintf "http://%s/messages" ip
     let req = new HttpRequestMessage(HttpMethod.Post, uri)
-    req.Content <- new StringContent(@"{""format"": ""raw"", ""freq"": 40, ""data"": [0,1,2]}" )
+    req.Content <- new StringContent((msg |> toJSON).ToString())
     let! _ = Async.AwaitTask <| http.SendAsync(req, CancellationToken.None)
     return ()
   }
