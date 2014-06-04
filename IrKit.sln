@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.30501.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "IrKit", "IrKit\IrKit.fsproj", "{B71E5824-555D-4F05-83FE-BC79098E7B8D}"
+EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "IrKit.Tests", "IrKit.Tests\IrKit.Tests.fsproj", "{C2D8E058-94AE-489B-8C89-490751C7DDA3}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B71E5824-555D-4F05-83FE-BC79098E7B8D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B71E5824-555D-4F05-83FE-BC79098E7B8D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B71E5824-555D-4F05-83FE-BC79098E7B8D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B71E5824-555D-4F05-83FE-BC79098E7B8D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C2D8E058-94AE-489B-8C89-490751C7DDA3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C2D8E058-94AE-489B-8C89-490751C7DDA3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C2D8E058-94AE-489B-8C89-490751C7DDA3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C2D8E058-94AE-489B-8C89-490751C7DDA3}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
