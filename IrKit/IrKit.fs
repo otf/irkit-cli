@@ -6,7 +6,6 @@ open System.Net.Http
 open System.Json
 open Fleece
 open Fleece.Operators
-open Zeroconf
 
 [<AutoOpen>]
 module IrKitData = 
@@ -38,18 +37,6 @@ module IrKitData =
 
 [<AutoOpen>]
 module IrKitService =
-  [<CompiledName("CreateZeroconfResolver")>]
-  let zeroconfResolver = { new IDeviceEndPointResolver with
-    member this.ResolveAsync () = async {
-      let! hosts = Async.AwaitTask <| ZeroconfResolver.ResolveAsync("_irkit._tcp.local.")
-      return hosts |> map (fun host -> Wifi host.IPAddress) |> Seq.toList
-    }
-  }
-
-  [<CompiledName("LookupAsync")>]
-  let lookup (resolver:IDeviceEndPointResolver) =
-    resolver.ResolveAsync()
-
   [<CompiledName("SendAsync")>]
   let send (http:#HttpMessageInvoker) (Wifi ip:DeviceEndPoint) (msg:RawMessage) = async {
     let req = new HttpRequestMessage(HttpMethod.Post, sprintf "http://%s/messages" ip)

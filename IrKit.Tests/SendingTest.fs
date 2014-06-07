@@ -36,17 +36,10 @@ type SendingTest () =
   member test.``should request a msg when sending the msg to the device by looked.`` ip freq data =
     let content =  sprintf @"{""format"":""raw"",""freq"":%d,""data"":%s}" freq data
     let httpMock = createHttpMock ip content
-    let resolve = fun r -> <@ (r:IDeviceEndPointResolver).ResolveAsync() @>
-
-    let resolver = Mock.With(fun r ->
-      <@
-        %(resolve r) --> async.Return [Wifi ip]
-      @>)
   
     monad {
-      let! dev = List.head <!> lookup resolver
       let data = ((JsonValue.Parse data :?> JsonArray) |> map (fun v -> v.Value.ReadAs<int>()) )
-      return! send httpMock dev { Frequency = freq; Data = List.ofSeq data }
+      return! send httpMock (Wifi ip) { Frequency = freq; Data = List.ofSeq data }
     }
     |> Async.RunSynchronously
 
