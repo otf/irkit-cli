@@ -1,0 +1,3 @@
+[submodule "lib/Zeroconf"]
+	path = lib/Zeroconf
+	url = git@github.com:otf/Zeroconf.git
