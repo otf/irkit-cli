@@ -54,6 +54,7 @@
     <None Include="packages.config" />
     <None Include="app.config" />
     <Compile Include="SendingTest.fs" />
+    <Compile Include="LookupTest.fs" />
     <Compile Include="ReceivingTest.fs" />
   </ItemGroup>
   <ItemGroup>
@@ -115,6 +116,14 @@
       <Project>{b71e5824-555d-4f05-83fe-bc79098e7b8d}</Project>
       <Private>True</Private>
     </ProjectReference>
+    <Reference Include="Zeroconf">
+      <HintPath>..\packages\Zeroconf.2.0.0\lib\net45\Zeroconf.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Zeroconf.Platform">
+      <HintPath>..\packages\Zeroconf.2.0.0\lib\net45\Zeroconf.Platform.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
   </ItemGroup>
   <Import Project="..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets" Condition="Exists('..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets')" />
   <Target Name="EnsureBclBuildImported" BeforeTargets="BeforeBuild" Condition="'$(BclBuildImported)' == ''">
